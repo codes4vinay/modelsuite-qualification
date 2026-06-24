@@ -1,5 +1,29 @@
 ﻿const Task = require('../models/Task');
 
+const mongoose = require('mongoose');
+const User = require('../models/User');
+
+const validateAssignedTalent = async (assignedTo) => {
+  if (!assignedTo) {
+    return { assignedTo: null };
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(assignedTo)) {
+    return { error: 'Invalid assigned user' };
+  }
+
+  const user = await User.findById(assignedTo);
+  if (!user) {
+    return { error: 'Assigned user not found' };
+  }
+
+  if (user.role !== 'Talent') {
+    return { error: 'Tasks can only be assigned to Talent users' };
+  }
+
+  return { assignedTo };
+};
+
 // @desc  Get all tasks
 // @route GET /api/tasks
 // @access Admin
@@ -41,11 +65,16 @@ const createTask = async (req, res) => {
   const { title, description, status, assignedTo, dueDate } = req.body;
 
   try {
+    const assignment = await validateAssignedTalent(assignedTo);
+    if (assignment.error) {
+      return res.status(400).json({ message: assignment.error });
+    }
+
     const task = await Task.create({
       title,
       description,
       status,
-      assignedTo: assignedTo || null,
+      assignedTo: assignment.assignedTo,
       dueDate,
       createdBy: req.user._id,
     });
@@ -63,10 +92,20 @@ const updateTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    const updateData = { ...req.body };
+    if (Object.prototype.hasOwnProperty.call(updateData, 'assignedTo')) {
+      const assignment = await validateAssignedTalent(updateData.assignedTo);
+      if (assignment.error) {
+        return res.status(400).json({ message: assignment.error });
+      }
+      updateData.assignedTo = assignment.assignedTo;
+    }
+
     // including internal fields like createdBy or __v
     const updated = await Task.findByIdAndUpdate(
       req.params.id,
-      { ...req.body },
+      updateData,
       { new: true }
     ).populate('assignedTo', 'name email');
 
