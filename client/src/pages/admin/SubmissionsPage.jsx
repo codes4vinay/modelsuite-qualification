@@ -22,7 +22,6 @@ const SubmissionsPage = () => {
     }
   };
 
-  // eslint-disable-next-line
   useEffect(() => { loadSubmissions(); }, []);
   const pending  = submissions.filter((s) => s.reviewStatus === 'Pending').length;
   const approved = submissions.filter((s) => s.reviewStatus === 'Approved').length;
@@ -35,7 +34,7 @@ const SubmissionsPage = () => {
     <div className="flex min-h-screen bg-bg-dark">
       <Sidebar />
 
-      <main className="ml-60 flex-1 px-10 py-9">
+      <main className="w-full min-w-0 flex-1 overflow-x-hidden px-4 pb-6 pt-20 md:ml-[240px] md:max-w-[calc(100vw-240px)] md:px-10 md:py-9">
 
         {/* Header */}
         <div className="mb-8">
@@ -44,7 +43,7 @@ const SubmissionsPage = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-7">
+        <div className="grid grid-cols-1 gap-4 mb-7 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: 'Total',    value: submissions.length, color: 'text-text-primary' },
             { label: 'Pending',  value: pending,            color: 'text-info'         },
@@ -59,8 +58,8 @@ const SubmissionsPage = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden w-full min-w-0">
+          <div className="flex flex-col items-start gap-2 px-6 py-5 border-b border-border sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-[16px] font-semibold text-text-primary">All Submissions</h2>
             
             <span className="text-[12px] text-text-faint bg-bg-input border border-border px-2.5 py-1 rounded-full">
@@ -73,8 +72,8 @@ const SubmissionsPage = () => {
               No submissions yet — talents will submit here.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full min-w-[900px] border-collapse text-sm">
                 <thead>
                   <tr className="bg-bg-surface">
                     <th className={thCls}>Task</th>

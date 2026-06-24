@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -39,6 +40,18 @@ const IconLogout = () => (
   </svg>
 );
 
+const IconMenu = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    <path d="M3 5h14M3 10h14M3 15h14" />
+  </svg>
+);
+
+const IconClose = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    <path d="M5 5l10 10M15 5L5 15" />
+  </svg>
+);
+
 const navItems = [
   { label: 'Dashboard',   path: '/admin/dashboard',   Icon: IconDashboard   },
   { label: 'Tasks',       path: '/admin/tasks',       Icon: IconTasks       },
@@ -50,19 +63,27 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate  = useNavigate();
   const location  = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
 
-  return (
-    <aside className="fixed inset-y-0 left-0 w-[240px] flex flex-col z-50"
-      style={{ background: '#0D0D0D' }}>
+  const goTo = (path) => {
+    navigate(path);
+    setIsOpen(false);
+  };
 
-      {/* Brand */}
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    navigate('/login');
+  };
+
+  const nav = (
+    <>
       <div className="flex items-center justify-center px-5 py-6">
         <img src="/modelsuite-talents.png" alt="ModelSuite Talents" className="w-40 h-auto object-contain" />
       </div>
 
       <div className="sidebar-divider mx-4" />
 
-      {/* Nav */}
       <nav className="flex flex-col gap-0.5 flex-1 px-3 pt-5">
         <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] px-2 mb-2"
           style={{ color: 'rgba(255,255,255,0.25)', fontFamily: 'Inter, sans-serif' }}>
@@ -73,7 +94,7 @@ const Sidebar = () => {
           const isActive = location.pathname === path;
           return (
             <button key={path}
-              onClick={() => navigate(path)}
+              onClick={() => goTo(path)}
               className={`nav-item ${isActive ? 'nav-active' : ''}`}>
               <Icon />
               <span>{label}</span>
@@ -82,7 +103,6 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {/* Footer */}
       <div className="px-3 pb-5">
         <div className="sidebar-divider mb-4" />
         <div className="flex items-center justify-between gap-2 px-1">
@@ -100,14 +120,48 @@ const Sidebar = () => {
           </div>
 
           <button
-            onClick={() => { logout(); navigate('/login'); }}
+            onClick={handleLogout}
             title="Sign out"
             className="logout-btn">
             <IconLogout />
           </button>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-border bg-bg-surface px-4 md:hidden">
+        <img src="/modelsuite-talents.png" alt="ModelSuite Talents" className="w-32 h-auto object-contain" />
+        <button
+          type="button"
+          onClick={() => setIsOpen((open) => !open)}
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-bg-input text-text-primary">
+          {isOpen ? <IconClose /> : <IconMenu />}
+        </button>
+      </header>
+
+      {isOpen && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-50 bg-black/60 md:hidden"
+        />
+      )}
+
+      <aside className={`fixed inset-y-0 left-0 z-[60] flex w-[240px] flex-col transition-transform duration-200 md:hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ background: '#0D0D0D' }}>
+        {nav}
+      </aside>
+
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-[240px] flex-col md:flex"
+        style={{ background: '#0D0D0D' }}>
+        {nav}
+      </aside>
+    </>
   );
 };
 

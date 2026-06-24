@@ -23,7 +23,6 @@ const TalentDashboard = () => {
     catch { setError('Failed to load your tasks'); }
   };
 
-  // eslint-disable-next-line
   useEffect(() => { loadAvailable(); loadMyTasks(); }, []);
   const handleRefresh = () => { loadAvailable(); loadMyTasks(); };
 
