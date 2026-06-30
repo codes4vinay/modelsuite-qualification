@@ -4,9 +4,10 @@ import SubmissionReviewModal from '../../components/admin/SubmissionReviewModal'
 import { fetchAllSubmissions } from '../../api/submissions';
 
 const REVIEW_STATUS_CLASS = {
-  Pending:  'status-badge-Submitted',
-  Approved: 'status-badge-Approved',
-  Rejected: 'status-badge-Rejected',
+  Pending:              'status-badge-Submitted',
+  Approved:             'status-badge-Approved',
+  Rejected:             'status-badge-Rejected',
+  'Revision Requested': 'status-badge-RevisionRequested',
 };
 
 const SubmissionsPage = () => {
@@ -26,6 +27,7 @@ const SubmissionsPage = () => {
   const pending  = submissions.filter((s) => s.reviewStatus === 'Pending').length;
   const approved = submissions.filter((s) => s.reviewStatus === 'Approved').length;
   const rejected = submissions.filter((s) => s.reviewStatus === 'Rejected').length;
+  const revisions = submissions.filter((s) => s.reviewStatus === 'Revision Requested').length;
 
   const thCls = 'text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.7px] text-text-faint border-b border-border whitespace-nowrap';
   const tdCls = 'px-5 py-4 border-b border-border align-middle';
@@ -39,14 +41,15 @@ const SubmissionsPage = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-[26px] font-bold tracking-tight text-text-primary">Submissions</h1>
-          <p className="mt-1 text-sm text-text-muted">Review talent submissions and approve or reject them.</p>
+          <p className="mt-1 text-sm text-text-muted">Review talent submissions, approve them, reject them, or request revisions.</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 gap-4 mb-7 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 mb-7 sm:grid-cols-2 lg:grid-cols-5">
           {[
             { label: 'Total',    value: submissions.length, color: 'text-text-primary' },
             { label: 'Pending',  value: pending,            color: 'text-info'         },
+            { label: 'Revisions', value: revisions,         color: 'text-warning'      },
             { label: 'Approved', value: approved,           color: 'text-success'      },
             { label: 'Rejected', value: rejected,           color: 'text-danger'       },
           ].map(({ label, value, color }) => (

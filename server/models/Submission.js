@@ -19,7 +19,7 @@ const submissionSchema = new mongoose.Schema(
     reviewStatus: {
       type: String,
       default: 'Pending',
-      // Should be: enum: ['Pending', 'Approved', 'Rejected']
+      enum: ['Pending', 'Approved', 'Rejected', 'Revision Requested'],
     },
   },
   { timestamps: true }

@@ -1,6 +1,8 @@
 ﻿const Submission = require('../models/Submission');
 const Task = require('../models/Task');
 
+const REVIEW_STATUSES = ['Pending', 'Approved', 'Rejected', 'Revision Requested'];
+
 // @desc  Submit a task with a file upload
 // @route POST /api/submissions/:taskId
 // @access Talent (protect middleware only — no role check)
@@ -24,6 +26,9 @@ const submitTask = async (req, res) => {
       // Overwrite: update in place
       submission.fileUrl = fileUrl;
       submission.notes = notes;
+      if (submission.reviewStatus === 'Revision Requested') {
+        submission.reviewStatus = 'Pending';
+      }
       await submission.save();
     } else {
       submission = await Submission.create({
@@ -84,7 +89,10 @@ const reviewSubmission = async (req, res) => {
   const { reviewStatus } = req.body;
 
   try {
-    // — any string is accepted and stored
+    if (!REVIEW_STATUSES.includes(reviewStatus)) {
+      return res.status(400).json({ message: 'Invalid review status' });
+    }
+
     const submission = await Submission.findByIdAndUpdate(
       req.params.id,
       { reviewStatus },

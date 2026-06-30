@@ -1,9 +1,10 @@
 ﻿import { reviewSubmission } from '../../api/submissions';
 
 const REVIEW_STATUS_CLASS = {
-  Pending:  'status-badge-Submitted',
-  Approved: 'status-badge-Approved',
-  Rejected: 'status-badge-Rejected',
+  Pending:              'status-badge-Submitted',
+  Approved:             'status-badge-Approved',
+  Rejected:             'status-badge-Rejected',
+  'Revision Requested': 'status-badge-RevisionRequested',
 };
 
 const SubmissionReviewModal = ({ submission, onClose, onReviewed }) => {
@@ -100,17 +101,21 @@ const SubmissionReviewModal = ({ submission, onClose, onReviewed }) => {
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-3 pt-1 border-t border-border mt-1">
+          <div className="flex flex-wrap gap-3 pt-1 border-t border-border mt-1">
             <button onClick={onClose}
-              className="flex-1 py-2.5 bg-bg-input text-text-muted border border-border rounded-lg text-sm font-medium cursor-pointer hover:bg-bg-hover hover:text-text-primary transition-all font-sans">
+              className="flex-1 min-w-[120px] py-2.5 bg-bg-input text-text-muted border border-border rounded-lg text-sm font-medium cursor-pointer hover:bg-bg-hover hover:text-text-primary transition-all font-sans">
               Cancel
             </button>
+            <button onClick={() => handleReview('Revision Requested')}
+              className="flex-1 min-w-[120px] py-2.5 bg-warning/10 text-warning border border-warning/30 rounded-lg text-sm font-semibold cursor-pointer hover:bg-warning/20 transition-all font-sans">
+              Request Revision
+            </button>
             <button onClick={() => handleReview('Rejected')}
-              className="flex-1 py-2.5 bg-danger/10 text-danger border border-danger/30 rounded-lg text-sm font-semibold cursor-pointer hover:bg-danger/20 transition-all font-sans">
+              className="flex-1 min-w-[120px] py-2.5 bg-danger/10 text-danger border border-danger/30 rounded-lg text-sm font-semibold cursor-pointer hover:bg-danger/20 transition-all font-sans">
               ✕ Reject
             </button>
             <button onClick={() => handleReview('Approved')}
-              className="flex-1 py-2.5 bg-success/10 text-success border border-success/30 rounded-lg text-sm font-semibold cursor-pointer hover:bg-success/20 transition-all font-sans">
+              className="flex-1 min-w-[120px] py-2.5 bg-success/10 text-success border border-success/30 rounded-lg text-sm font-semibold cursor-pointer hover:bg-success/20 transition-all font-sans">
               ✓ Approve
             </button>
           </div>

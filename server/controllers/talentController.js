@@ -1,5 +1,6 @@
 ﻿const Task = require('../models/Task');
 const mongoose = require('mongoose');
+const Submission = require('../models/Submission');
 
 // @desc  Get all available (Open) tasks
 // @route GET /api/talent/tasks/available
@@ -26,7 +27,20 @@ const getMyTasks = async (req, res) => {
     const tasks = await Task.find({ assignedTo: req.user._id })
       .sort({ updatedAt: -1 });
 
-    res.json(tasks);
+    const submissions = await Submission.find({
+      talentId: req.user._id,
+      taskId: { $in: tasks.map((task) => task._id) },
+    }).select('taskId reviewStatus');
+
+    const reviewStatusByTask = submissions.reduce((acc, submission) => {
+      acc[submission.taskId.toString()] = submission.reviewStatus;
+      return acc;
+    }, {});
+
+    res.json(tasks.map((task) => ({
+      ...task.toObject(),
+      submissionReviewStatus: reviewStatusByTask[task._id.toString()],
+    })));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

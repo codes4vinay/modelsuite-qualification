@@ -8,6 +8,8 @@ const STATUS_CLASS = {
   Submitted: 'status-badge-Submitted',
   Approved:  'status-badge-Approved',
   Rejected:  'status-badge-Rejected',
+  Pending:   'status-badge-Submitted',
+  'Revision Requested': 'status-badge-RevisionRequested',
 };
 
 /* ── Calendar icon ── */
@@ -61,7 +63,12 @@ const MyTasksList = ({ tasks, onRefresh }) => {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {tasks.map((task, i) => (
+        {tasks.map((task, i) => {
+          const displayStatus = ['Approved', 'Rejected', 'Revision Requested'].includes(task.submissionReviewStatus)
+            ? task.submissionReviewStatus
+            : task.status;
+
+          return (
           <div key={task._id}
             className="task-card table-row-animate"
             style={{ animationDelay: `${i * 0.06}s` }}>
@@ -102,15 +109,15 @@ const MyTasksList = ({ tasks, onRefresh }) => {
                     e.currentTarget.style.borderColor = 'rgba(59,130,246,0.25)';
                   }}>
                   <IconUpload />
-                  {task.status === 'Submitted' ? 'Re-submit' : 'Submit'}
+                  {task.submissionReviewStatus === 'Revision Requested' || task.status === 'Submitted' ? 'Re-submit' : 'Submit'}
                 </button>
               )}
 
-              {task.status ? (
+              {displayStatus ? (
                 <span
-                  className={`inline-block px-2.5 py-[3px] rounded-full text-[11px] font-medium ${STATUS_CLASS[task.status] || ''}`}
+                  className={`inline-block px-2.5 py-[3px] rounded-full text-[11px] font-medium ${STATUS_CLASS[displayStatus] || ''}`}
                   style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {task.status}
+                  {displayStatus}
                 </span>
               ) : (
                 <span
@@ -121,7 +128,8 @@ const MyTasksList = ({ tasks, onRefresh }) => {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {submitTarget && (
